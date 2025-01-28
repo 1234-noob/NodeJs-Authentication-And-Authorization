@@ -4,6 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const connectToDb = require("./database/db");
+const imageRoutes = require("./routes/image-routes");
 
 const authRoutes = require("./routes/auth-routes");
 const homeRoutes = require("./routes/home-routes");
@@ -27,6 +28,9 @@ app.use("/api/home",homeRoutes);
 
 //use of Admin router
 app.use("/api/admin",adminRoutes);
+
+//use of Image router
+app.use("/api/image",imageRoutes)
 
 
 
