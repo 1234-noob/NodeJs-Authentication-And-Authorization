@@ -110,7 +110,7 @@ const loginUser = async (req,res) =>{
             accessToken
         })
         } catch (error) {
-        console.log(error);
+       
         res.status(500).json({
             success:false,
             message:"Some error occured! Please try again"
@@ -119,4 +119,60 @@ const loginUser = async (req,res) =>{
     }
 }
 
-module.exports = {registerUser,loginUser}
+
+//change password controller
+
+const changePassword = async (req,res) =>{
+    try {
+        //get userID from auth middleware
+        
+        const UserId = req.userInfo.userId;
+
+        //get old password and new password from request body
+        const{oldPassword,newPassword} = req.body;
+        
+        //find current logged in user
+        const user = await User.findById(UserId);
+        if(!user){
+            res.status(400).json({
+                success:false,
+                message:"User not found"
+            })
+        }
+        //check if old password is correct or not
+        const isOldPasswordCorrect = await bcrypt.compare(oldPassword,user.password
+
+        );
+        if(!isOldPasswordCorrect){
+            res.status(400).json({
+                success:false,
+                message:"Old password is incorrect"
+            })
+        }
+        //hash the new password
+        const salt = await bcrypt.genSalt(10);
+        const newHashedPassword = await bcrypt.hash(newPassword,salt);
+
+        //update the password
+        user.password = newHashedPassword;
+        await user.save();
+
+        res.status(200).json({
+            success:true,
+            message:"Password changed successfully"
+        })  
+       
+        
+
+
+    } catch (error) {
+        res.status(500).json({
+            success:false,
+            message:"Some error occured! Please try again"
+
+        })
+        
+    }
+}
+
+module.exports = {registerUser,loginUser,changePassword}
